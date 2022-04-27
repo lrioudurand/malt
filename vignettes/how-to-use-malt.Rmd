@@ -1,0 +1,123 @@
+---
+title: "How to use malt?"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to use malt?}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(malt)
+```
+
+Goal: generate samples $X_1,\cdots,X_n\in\mathbb{R}^d$ approximately distributed from
+$$
+\Pi(x)\propto e^{-\Phi(x)}
+$$
+by evaluating a potential function $\Phi$ and its gradient.
+
+Example 1: Gaussian
+$$
+\begin{aligned}
+\Phi(x)&=\frac{1}{2}(x-\mu)^\top\Sigma^{-1}(x-\mu)\\
+\nabla\Phi(x)&=\Sigma^{-1}(x-\mu)
+\end{aligned}
+$$
+Suppose we want to sample from a Gaussian distribution with heterogeneous scales, such that
+$$
+\mu=0_d,\qquad \Sigma=\underset{1\le i\le d}{\rm diag}(\sigma_i^2),\qquad \sigma_i^2=i/d,\qquad d=50.
+$$
+We specify the corresponding potential function and its gradient
+```{r}
+d=100
+sigma=((d:1)/d)^(1/2)
+potential=function(x){sum(0.5*x^2/sigma^2)}
+grad=function(x){x/sigma^2}
+```
+
+We choose a friction, time step and integration time. We run malt from a deterministic initialization and draw $n=10000$ samples. We also run hmc (friction: g=0) to compare. Both outputs are stored.
+```{r}
+g=1.5
+h=0.15
+T_phys=1.6
+x_init=rnorm(d)*sigma
+x_init=rep(5,d)
+n=10^4
+output_malt=malt(potential,grad,n,g,h,T_phys,x_init)
+output_hmc=malt(potential,grad,n,0,h,T_phys,x_init)
+```
+We obtain the acceptance rates of malt and hmc.
+```{r}
+output_malt$acceptance_rate
+output_hmc$acceptance_rate
+```
+
+We represent graphically the traceplots and ACFs for the first component
+```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
+par(mar=c(4,4,1,1))
+index=1
+plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
+plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
+acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
+acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
+table_ess=matrix(c(
+output_malt$ess_mean[index],
+output_hmc$ess_mean[index],
+output_malt$ess_square[index],
+output_hmc$ess_square[index]),nr=2)
+rownames(table_ess)=c("MALT","HMC")
+colnames(table_ess)=c("ESS mean","ESS square")
+table_ess
+```
+
+We illustrate traceplots and ACFs for another component (quantile 2% worst positive autocorrelation for hmc)
+```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
+library(knitr)
+par(mar=c(4,4,1,1))
+index=which(rank(output_hmc$ess_mean)==floor(d/50))[1]
+plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
+plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
+acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
+acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
+table_ess=matrix(c(output_malt$ess_mean[index],output_hmc$ess_mean[index],output_malt$ess_square[index],output_hmc$ess_square[index]),nr=2)
+rownames(table_ess)=c("MALT","HMC")
+colnames(table_ess)=c("ESS mean","ESS square")
+table_ess
+#kable(table_ess,row.names=c("MALT","HMC"),col.names=c("ESS mean","ESS square"))
+```
+
+We illustrate traceplots and ACFs for another component (quantile 2% worst negative autocorrelation for hmc)
+```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
+par(mar=c(4,4,1,1))
+index=which(rank(output_hmc$ess_square)==floor(d/50))[1]
+plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
+plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
+acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
+acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
+table_ess=matrix(c(output_malt$ess_mean[index],output_hmc$ess_mean[index],output_malt$ess_square[index],output_hmc$ess_square[index]),nr=2)
+rownames(table_ess)=c("MALT","HMC")
+colnames(table_ess)=c("ESS mean","ESS square")
+table_ess
+```
+
+
+We illustrate the distribution of the ESS when estimating the mean and the square.
+```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
+boxplot(output_malt$ess_mean,output_hmc$ess_mean,names=c("MALT","HMC"),ylim=c(0,n),main="ESS mean")
+boxplot(output_malt$ess_square,output_hmc$ess_square,names=c("MALT","HMC"),ylim=c(0,n),main="ESS square")
+summary(output_malt$ess_mean)
+summary(output_hmc$ess_mean)
+summary(output_malt$ess_square)
+summary(output_hmc$ess_square)
+```
+
+
+
