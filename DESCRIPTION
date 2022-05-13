@@ -17,3 +17,4 @@ VignetteBuilder: knitr
 Imports: 
     coda,
     stats
+

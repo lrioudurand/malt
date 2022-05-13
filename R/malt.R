@@ -12,8 +12,7 @@
 #' @param warm_up a boolean (should the chain be warmed up? default=FALSE). If TRUE then unadjusted trajectories are drawn for n/2 iterations followed by adjusted trajectories for n/2 iterations. The chain starts from the resulting output and the warm up phase is discarded.
 #'
 #' @return a list with the samples from the chain, the acceptance rate, the effective sample sizes for estimating the first and second moments of each component.
-#' @importFrom stats rnorm rexp
-#' @importFrom coda effectiveSize
+#' @importFrom stats rnorm rexp var
 #' @export
 #'
 #' @examples
@@ -84,7 +83,5 @@ malt=function(potential,grad,n,g,h,T_phys,x_init,warm_up=F){
     if(stats::rexp(1)>log_alpha){malt_x=x}
     chain[i+1,]=malt_x
   }
-  ess_mean=coda::effectiveSize(chain)
-  ess_square=coda::effectiveSize(chain^2)
-  return(list(chain=chain, acceptance_rate=mean(chain[2:n,1]!=chain[1:(n-1),1]),ess_mean=ess_mean,ess_square=ess_square,rescaled_ess_mean=ess_mean/(n*L),rescaled_ess_square=ess_square/(n*L)))
+  return(list(chain=chain, acceptance_rate=mean(chain[2:n,1]!=chain[1:(n-1),1]),grad_steps=L,means=apply(chain,2,mean),variances=apply(chain,2,var)))
 }

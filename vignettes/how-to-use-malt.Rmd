@@ -68,11 +68,13 @@ plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("trace
 plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
 acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
 acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
+summary_malt=ess(output_malt)
+summary_hmc=ess(output_hmc)
 table_ess=matrix(c(
-output_malt$ess_mean[index],
-output_hmc$ess_mean[index],
-output_malt$ess_square[index],
-output_hmc$ess_square[index]),nr=2)
+summary_malt$ess_mean[index],
+summary_hmc$ess_mean[index],
+summary_malt$ess_square[index],
+summary_hmc$ess_square[index]),nr=2)
 rownames(table_ess)=c("MALT","HMC")
 colnames(table_ess)=c("ESS mean","ESS square")
 table_ess
@@ -82,12 +84,16 @@ We illustrate traceplots and ACFs for another component (quantile 2% worst posit
 ```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
 library(knitr)
 par(mar=c(4,4,1,1))
-index=which(rank(output_hmc$ess_mean)==floor(d/50))[1]
+index=which(rank(summary_hmc$ess_mean)==floor(d/50))[1]
 plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
 plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
 acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
 acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
-table_ess=matrix(c(output_malt$ess_mean[index],output_hmc$ess_mean[index],output_malt$ess_square[index],output_hmc$ess_square[index]),nr=2)
+table_ess=matrix(c(
+  summary_malt$ess_mean[index],
+  summary_hmc$ess_mean[index],
+  summary_malt$ess_square[index],
+  summary_hmc$ess_square[index]),nr=2)
 rownames(table_ess)=c("MALT","HMC")
 colnames(table_ess)=c("ESS mean","ESS square")
 table_ess
@@ -97,12 +103,16 @@ table_ess
 We illustrate traceplots and ACFs for another component (quantile 2% worst negative autocorrelation for hmc)
 ```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
 par(mar=c(4,4,1,1))
-index=which(rank(output_hmc$ess_square)==floor(d/50))[1]
+index=which(rank(summary_hmc$ess_square)==floor(d/50))[1]
 plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
 plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
 acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
 acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
-table_ess=matrix(c(output_malt$ess_mean[index],output_hmc$ess_mean[index],output_malt$ess_square[index],output_hmc$ess_square[index]),nr=2)
+table_ess=matrix(c(
+  summary_malt$ess_mean[index],
+  summary_hmc$ess_mean[index],
+  summary_malt$ess_square[index],
+  summary_hmc$ess_square[index]),nr=2)
 rownames(table_ess)=c("MALT","HMC")
 colnames(table_ess)=c("ESS mean","ESS square")
 table_ess
@@ -111,12 +121,12 @@ table_ess
 
 We illustrate the distribution of the ESS when estimating the mean and the square.
 ```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
-boxplot(output_malt$ess_mean,output_hmc$ess_mean,names=c("MALT","HMC"),ylim=c(0,n),main="ESS mean")
-boxplot(output_malt$ess_square,output_hmc$ess_square,names=c("MALT","HMC"),ylim=c(0,n),main="ESS square")
-summary(output_malt$ess_mean)
-summary(output_hmc$ess_mean)
-summary(output_malt$ess_square)
-summary(output_hmc$ess_square)
+boxplot(summary_malt$ess_mean,summary_hmc$ess_mean,names=c("MALT","HMC"),ylim=c(0,n),main="ESS mean")
+boxplot(summary_malt$ess_square,summary_hmc$ess_square,names=c("MALT","HMC"),ylim=c(0,n),main="ESS square")
+summary(summary_malt$ess_mean)
+summary(summary_hmc$ess_mean)
+summary(summary_malt$ess_square)
+summary(summary_hmc$ess_square)
 ```
 
 
