@@ -2,7 +2,7 @@
 
 export(ess)
 export(malt)
+export(trajectory)
 importFrom(coda,effectiveSize)
 importFrom(stats,rexp)
 importFrom(stats,rnorm)
-importFrom(stats,var)

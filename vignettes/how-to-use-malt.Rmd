@@ -35,39 +35,38 @@ Suppose we want to sample from a Gaussian distribution with heterogeneous scales
 $$
 \mu=0_d,\qquad \Sigma=\underset{1\le i\le d}{\rm diag}(\sigma_i^2),\qquad \sigma_i^2=i/d,\qquad d=50.
 $$
-We specify the corresponding potential function and its gradient
+We specify the corresponding potential function and its gradient, as well as the starting values.
 ```{r}
 d=100
 sigma=((d:1)/d)^(1/2)
-potential=function(x){sum(0.5*x^2/sigma^2)}
+U=function(x){sum(0.5*x^2/sigma^2)}
 grad=function(x){x/sigma^2}
+init=rep(5,d)
 ```
 
-We choose a friction, time step and integration time. We run malt from a deterministic initialization and draw $n=10000$ samples. We also run hmc (friction: g=0) to compare. Both outputs are stored.
+We choose a friction, time step and integration time. We run malt from a deterministic initialisation and draw $n=10000$ samples. We also run hmc (friction: g=0) to compare. Both outputs are stored.
 ```{r}
-g=1.5
-h=0.15
-T_phys=1.6
-x_init=rnorm(d)*sigma
-x_init=rep(5,d)
 n=10^4
-output_malt=malt(potential,grad,n,g,h,T_phys,x_init)
-output_hmc=malt(potential,grad,n,0,h,T_phys,x_init)
+g=1.5
+h=0.2
+L=10
+output_malt=malt(init,U,grad,n,g,h,L)
+output_hmc=malt(init,U,grad,n,0,h,L)
 ```
 We obtain the acceptance rates of malt and hmc.
 ```{r}
-output_malt$acceptance_rate
-output_hmc$acceptance_rate
+output_malt$acceptance
+output_hmc$acceptance
 ```
 
 We represent graphically the traceplots and ACFs for the first component
 ```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
 par(mar=c(4,4,1,1))
 index=1
-plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
-plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
-acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
-acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
+plot(output_malt$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
+plot(output_hmc$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
+acf(output_malt$samples[,index],ylab=paste("ACF n°",index," - MALT"),main="")
+acf(output_hmc$samples[,index],ylab=paste("ACF n°",index," - HMC"),main="")
 summary_malt=ess(output_malt)
 summary_hmc=ess(output_hmc)
 table_ess=matrix(c(
@@ -85,10 +84,10 @@ We illustrate traceplots and ACFs for another component (quantile 2% worst posit
 library(knitr)
 par(mar=c(4,4,1,1))
 index=which(rank(summary_hmc$ess_mean)==floor(d/50))[1]
-plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
-plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
-acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
-acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
+plot(output_malt$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
+plot(output_hmc$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
+acf(output_malt$samples[,index],ylab=paste("ACF n°",index," - MALT"),main="")
+acf(output_hmc$samples[,index],ylab=paste("ACF n°",index," - HMC"),main="")
 table_ess=matrix(c(
   summary_malt$ess_mean[index],
   summary_hmc$ess_mean[index],
@@ -104,10 +103,10 @@ We illustrate traceplots and ACFs for another component (quantile 2% worst negat
 ```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
 par(mar=c(4,4,1,1))
 index=which(rank(summary_hmc$ess_square)==floor(d/50))[1]
-plot(output_malt$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
-plot(output_hmc$chain[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
-acf(output_malt$chain[,index],ylab=paste("ACF n°",index," - MALT"),main="")
-acf(output_hmc$chain[,index],ylab=paste("ACF n°",index," - HMC"),main="")
+plot(output_malt$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
+plot(output_hmc$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
+acf(output_malt$samples[,index],ylab=paste("ACF n°",index," - MALT"),main="")
+acf(output_hmc$samples[,index],ylab=paste("ACF n°",index," - HMC"),main="")
 table_ess=matrix(c(
   summary_malt$ess_mean[index],
   summary_hmc$ess_mean[index],

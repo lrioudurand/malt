@@ -3,3 +3,4 @@
 ^devtools_history\.R$
 ^doc$
 ^Meta$
+^README\.Rmd$

@@ -4,27 +4,30 @@
 \alias{malt}
 \title{malt}
 \usage{
-malt(potential, grad, n, g, h, T_phys, x_init, warm_up = F)
+malt(init, U, grad, n, g, h, L, warm_up = F)
 }
 \arguments{
-\item{potential}{a function (potential evaluation)}
+\item{init}{Real vector. Initial values for the sampling algorithm.}
 
-\item{grad}{a function (gradient evaluation)}
+\item{U}{A potential function to return the log-density of the distribution to be sampled from, up to an additive constant. It should input a real vector of the same length as init and output a scalar.}
 
-\item{n}{a positive integer (number of MCMC samples)}
+\item{grad}{A function to return the gradient of the potential. It should input and output a real vector of the same length as init.}
 
-\item{g}{a non-negative number (friction)}
+\item{n}{Positive integer. The number of samples to be generated.}
 
-\item{h}{a positive number (time step)}
+\item{g}{Non-negative real number. The friction, a.k.a damping parameter. The choice g=0 boils down to Hamiltonian Monte Carlo.}
 
-\item{T_phys}{a positive number (integration time)}
+\item{h}{Positive real number. The time step.}
 
-\item{x_init}{a vector (initial position)}
+\item{L}{Positive integer. The number of steps per trajectory. The choice L=1 boils down to the Metropolis Adjusted Langevin Algorithm.}
 
-\item{warm_up}{a boolean (should the chain be warmed up? default=FALSE). If TRUE then unadjusted trajectories are drawn for n/2 iterations followed by adjusted trajectories for n/2 iterations. The chain starts from the resulting output and the warm up phase is discarded.}
+\item{warm_up}{Logical. Should the chain be warmed up? If TRUE, the samples are generated after a warm-up phase of n successive trajectories. The first half of the warm-up phase is composed by unadjusted trajectories.}
 }
 \value{
-a list with the samples from the chain, the acceptance rate, the effective sample sizes for estimating the first and second moments of each component.
+Returns a list with the following objects:
+\item {samples}{a matrix whose rows are the samples generated.}
+\item {draw}{a vector corresponding to the last draw of the chain.}
+\item {acceptance}{the acceptance rate of the chain. An acceptance rate close to zero/one indicates that the time step chosen is respectively too large/small. Optimally, the time step should be tuned to obtain an acceptance rate slightly above 65\%.}
 }
 \description{
 Generates approximate samples from a distribution with density \deqn{\Pi(x)\propto e^{-U(x)}}{Pi(x)=exp(-U(x))/C} Given a potential function \eqn{U}{U} and its gradient evaluation, implements the sampling algorithm: Metropolis Adjusted Langevin Trajectories (Riou-Durand and Vogrinc 2022). Details available at: https://arxiv.org/abs/2202.13230.
@@ -32,12 +35,12 @@ Generates approximate samples from a distribution with density \deqn{\Pi(x)\prop
 \examples{
 d=50
 sigma=((d:1)/d)^(1/2)
-potential=function(x){sum(0.5*x^2/sigma^2)}
+init=rnorm(d)*sigma
+U=function(x){sum(0.5*x^2/sigma^2)}
 grad=function(x){x/sigma^2}
 n=10^4
 g=1.5
 h=0.20
-T_phys=2
-x_init=rnorm(d)*sigma
-malt(potential,grad,n,g,h,T_phys,x_init)
+L=10
+malt(init,U,grad,n,g,h,L)
 }
