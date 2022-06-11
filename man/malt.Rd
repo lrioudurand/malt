@@ -25,9 +25,9 @@ malt(init, U, grad, n, g, h, L, warm_up = F)
 }
 \value{
 Returns a list with the following objects:
-\item {samples}{a matrix whose rows are the samples generated.}
-\item {draw}{a vector corresponding to the last draw of the chain.}
-\item {acceptance}{the acceptance rate of the chain. An acceptance rate close to zero/one indicates that the time step chosen is respectively too large/small. Optimally, the time step should be tuned to obtain an acceptance rate slightly above 65\%.}
+\item{samples}{a matrix whose rows are the samples generated.}
+\item{draw}{a vector corresponding to the last draw of the chain.}
+\item{acceptance}{the acceptance rate of the chain. An acceptance rate close to zero/one indicates that the time step chosen is respectively too large/small. Optimally, the time step should be tuned to obtain an acceptance rate slightly above 65\%.}
 }
 \description{
 Generates approximate samples from a distribution with density \deqn{\Pi(x)\propto e^{-U(x)}}{Pi(x)=exp(-U(x))/C} Given a potential function \eqn{U}{U} and its gradient evaluation, implements the sampling algorithm: Metropolis Adjusted Langevin Trajectories (Riou-Durand and Vogrinc 2022). Details available at: https://arxiv.org/abs/2202.13230.
