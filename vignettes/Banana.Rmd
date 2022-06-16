@@ -1,0 +1,69 @@
+---
+title: "Banana"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Banana}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This demo shows how to use the malt function from the malt library to sample from the Banana distribution.
+
+```{r setup}
+library(malt)
+```
+
+Banana distribution $\theta=(\theta_1,\theta_2)$ given by
+$$
+\begin{align*}
+\theta_1~&\sim~\mathcal{N}(0,10)\,,
+\\
+\theta_2~&\sim~\mathcal{N}(0.03(\theta_1^2-100),1)\,.
+\end{align*}
+$$
+It is a simple modification of a two dimensional Gaussian target with level sets that are highly non-convex.
+
+The potential and its gradient are specified as follows:
+```{r}
+U=function(theta){
+(theta[1]^2/10+(theta[2]-0.03*(theta[1]^2-100))^2)/2
+}
+grad=function(theta){
+c(theta[1]/10+0.06*theta[1]*(0.03*(theta[1]^2-100)-theta[2]),theta[2]-0.03*(theta[1]^2-100))
+}
+
+
+```
+
+```{r}
+d=2
+init=rep(5,d)
+n_steps=5000
+g=0.1
+h=1.5
+L=6
+output=malt(init, U, grad, n_steps, g, h, L)
+chain=output$samples
+apply(chain,2,mean)
+output$acceptance
+
+```
+
+```{r}
+
+plot(chain[,1],type="l")
+plot(chain[,2],type="l")
+
+plot(chain[,1],chain[,2])
+library(coda)
+effectiveSize(chain)
+effectiveSize(chain^2)
+```
+

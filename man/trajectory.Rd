@@ -9,9 +9,9 @@ trajectory(init, U, grad, g, h, L)
 \arguments{
 \item{init}{Real vector. Initial values for the Langevin trajectory.}
 
-\item{U}{A potential function to return the log-density of the distribution to be sampled from, up to an additive constant. It should input a real vector of the same length as init and output a scalar.}
+\item{U}{A potential function to return the log-density of the distribution to be sampled from, up to an additive constant. It should input a real vector of the same length as \code{init} and output a scalar.}
 
-\item{grad}{A function to return the gradient of the potential. It should input and output a real vector of the same length as init.}
+\item{grad}{A function to return the gradient of the potential. It should input and output a real vector of the same length as \code{init}.}
 
 \item{g}{Non-negative real number. The friction, a.k.a damping parameter. The choice g=0 boils down to Hamiltonian Monte Carlo.}
 
@@ -26,7 +26,7 @@ Returns a list with the following objects:
 \item{num_error}{a vector containing the cumulative numerical errors along the path. The numerical error is measured by the energy difference incurred by the leapfrog integrator.}
 }
 \description{
-Draws a numerical Langevin trajectory with target density \deqn{\Pi(x)\propto e^{-U(x)}}{Pi(x)=exp(-U(x))/C} Given a potential function \eqn{U}{U} and its gradient evaluation, draws a trajectory and computes its numerical error. The trajectory drawn corresponds to the proposal in the sampling algorithm: Metropolis Adjusted Langevin Trajectories (Riou-Durand and Vogrinc 2022). Details available at: https://arxiv.org/abs/2202.13230.
+Draws a Langevin trajectory starting from a Gaussian velocity and computes its numerical error. with target density \deqn{\Pi(x)\propto e^{-U(x)}}{Pi(x)=exp(-U(x))/C} Given a potential function \eqn{U}{U} and its gradient evaluation, draws a trajectory and computes its numerical error. The trajectory drawn corresponds to the proposal in the sampling algorithm: Metropolis Adjusted Langevin Trajectories (Riou-Durand and Vogrinc 2022). Details available at: https://arxiv.org/abs/2202.13230.
 }
 \examples{
 d=50
@@ -36,6 +36,6 @@ U=function(x){sum(0.5*x^2/sigma^2)}
 grad=function(x){x/sigma^2}
 g=1.5
 h=0.20
-L=10
+L=8
 trajectory(init,U,grad,g,h,L)
 }

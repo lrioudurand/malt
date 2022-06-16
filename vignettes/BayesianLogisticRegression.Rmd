@@ -1,0 +1,62 @@
+---
+title: "Bayesian Logistic Regression"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Logistic Regression}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This example describes how to perform a Bayesian logistic regression using the malt function from the malt library. For an explanation on how to use the malt function see different vignette.
+
+```{r setup}
+library(malt)
+```
+
+We are given $n$ data-points which have $d$ real-valued explanatory variables, summarised in a matrix $X\in\mathbb{R}^{n\times d}$ and a vector of response variables $Y\in\{0,1\}^{n}$. We want to find the $\theta\in\mathbb{R}^d$ such that $(1+\exp(-\theta^\top X_i))^{-1}$ is a good predictor of the probability of $Y_i=1$. We pick $X$ and a true $\theta$ and generate synthetic data $Y$, which we then try to recover:
+
+```{r}
+d=2
+n=1000
+X=matrix(rnorm(n*d),nr=n,nc=d)
+true_theta=rep(1,d)
+p=1/(1+exp(-X%*%true_theta))
+Y=as.numeric(runif(length(p))<p)
+```
+The log-likelihood corresponding to the logistic regression is:
+$$
+\log(L(y|\theta,x))~=~Y^\top X\theta~-~\sum_{i=1}^n \log\left(1+\exp(\theta^\top X_i)\right)\,.
+$$
+Together with a prior $p(\theta)$ this generates a posterior potential
+$$
+U(\theta)~=~-Y^\top X\theta~+~\sum_{i=1}^n \log\left(1+\exp(\theta^\top X_i)\right)~-~\log(p(\theta))\,.
+$$
+We are going to implement this in R with an impropper prior (we pre-compute $Y^\top X$ to improve efficiency):
+```{r}
+YX=c(Y%*%X)
+U=function(theta){
+-sum(YX*theta)+sum(log(1+exp(X%*%theta)))
+}
+grad=function(theta){
+-YX+c(c(1/(1+exp(-X%*%theta)))%*%X)
+}
+init=rep(0,d)
+n_steps=1000
+g=1
+h=0.1
+L=floor(2/h)
+output=malt(init, U, grad, n_steps, g, h, L)
+chain=output$samples
+apply(chain,2,mean)
+output$acceptance
+plot(chain[,1],type="l")
+plot(chain[,2],type="l")
+
+```

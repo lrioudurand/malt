@@ -1,4 +1,4 @@
-#' ess
+#' ess_summary
 #'
 #' @description computes effective sample sizes of the chain
 #'
@@ -17,10 +17,10 @@
 #' n=10^4
 #' g=1.5
 #' h=0.20
-#' L=10
+#' L=8
 #' output=malt(init,U,grad,n,g,h,L)
-#' ess(output)
-ess=function(output){
+#' ess_summary(output)
+ess_summary=function(output){
   ess_mean=coda::effectiveSize(output$samples)
   ess_square=coda::effectiveSize(output$samples^2)
   return(list(ess_mean=ess_mean,ess_square=ess_square))

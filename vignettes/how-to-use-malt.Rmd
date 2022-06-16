@@ -37,7 +37,7 @@ $$
 $$
 We specify the corresponding potential function and its gradient, as well as the starting values.
 ```{r}
-d=100
+d=50
 sigma=((d:1)/d)^(1/2)
 U=function(x){sum(0.5*x^2/sigma^2)}
 grad=function(x){x/sigma^2}
@@ -58,75 +58,3 @@ We obtain the acceptance rates of malt and hmc.
 output_malt$acceptance
 output_hmc$acceptance
 ```
-
-We represent graphically the traceplots and ACFs for the first component
-```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
-par(mar=c(4,4,1,1))
-index=1
-plot(output_malt$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
-plot(output_hmc$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
-acf(output_malt$samples[,index],ylab=paste("ACF n°",index," - MALT"),main="")
-acf(output_hmc$samples[,index],ylab=paste("ACF n°",index," - HMC"),main="")
-summary_malt=ess(output_malt)
-summary_hmc=ess(output_hmc)
-table_ess=matrix(c(
-summary_malt$ess_mean[index],
-summary_hmc$ess_mean[index],
-summary_malt$ess_square[index],
-summary_hmc$ess_square[index]),nr=2)
-rownames(table_ess)=c("MALT","HMC")
-colnames(table_ess)=c("ESS mean","ESS square")
-table_ess
-```
-
-We illustrate traceplots and ACFs for another component (quantile 2% worst positive autocorrelation for hmc)
-```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
-library(knitr)
-par(mar=c(4,4,1,1))
-index=which(rank(summary_hmc$ess_mean)==floor(d/50))[1]
-plot(output_malt$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
-plot(output_hmc$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
-acf(output_malt$samples[,index],ylab=paste("ACF n°",index," - MALT"),main="")
-acf(output_hmc$samples[,index],ylab=paste("ACF n°",index," - HMC"),main="")
-table_ess=matrix(c(
-  summary_malt$ess_mean[index],
-  summary_hmc$ess_mean[index],
-  summary_malt$ess_square[index],
-  summary_hmc$ess_square[index]),nr=2)
-rownames(table_ess)=c("MALT","HMC")
-colnames(table_ess)=c("ESS mean","ESS square")
-table_ess
-#kable(table_ess,row.names=c("MALT","HMC"),col.names=c("ESS mean","ESS square"))
-```
-
-We illustrate traceplots and ACFs for another component (quantile 2% worst negative autocorrelation for hmc)
-```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
-par(mar=c(4,4,1,1))
-index=which(rank(summary_hmc$ess_square)==floor(d/50))[1]
-plot(output_malt$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - MALT"))
-plot(output_hmc$samples[1:500,index],type="l",xlab="iterations",ylab=paste("traceplot n°",index," - HMC"))
-acf(output_malt$samples[,index],ylab=paste("ACF n°",index," - MALT"),main="")
-acf(output_hmc$samples[,index],ylab=paste("ACF n°",index," - HMC"),main="")
-table_ess=matrix(c(
-  summary_malt$ess_mean[index],
-  summary_hmc$ess_mean[index],
-  summary_malt$ess_square[index],
-  summary_hmc$ess_square[index]),nr=2)
-rownames(table_ess)=c("MALT","HMC")
-colnames(table_ess)=c("ESS mean","ESS square")
-table_ess
-```
-
-
-We illustrate the distribution of the ESS when estimating the mean and the square.
-```{r, out.width='.50\\linewidth', fig.width=3, fig.height=3,fig.show='hold'}
-boxplot(summary_malt$ess_mean,summary_hmc$ess_mean,names=c("MALT","HMC"),ylim=c(0,n),main="ESS mean")
-boxplot(summary_malt$ess_square,summary_hmc$ess_square,names=c("MALT","HMC"),ylim=c(0,n),main="ESS square")
-summary(summary_malt$ess_mean)
-summary(summary_hmc$ess_mean)
-summary(summary_malt$ess_square)
-summary(summary_hmc$ess_square)
-```
-
-
-

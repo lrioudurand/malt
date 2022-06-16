@@ -1,10 +1,10 @@
 #' trajectory
 #'
-#' @description Draws a numerical Langevin trajectory with target density \deqn{\Pi(x)\propto e^{-U(x)}}{Pi(x)=exp(-U(x))/C} Given a potential function \eqn{U}{U} and its gradient evaluation, draws a trajectory and computes its numerical error. The trajectory drawn corresponds to the proposal in the sampling algorithm: Metropolis Adjusted Langevin Trajectories (Riou-Durand and Vogrinc 2022). Details available at: https://arxiv.org/abs/2202.13230.
+#' @description Draws a Langevin trajectory starting from a Gaussian velocity and computes its numerical error. with target density \deqn{\Pi(x)\propto e^{-U(x)}}{Pi(x)=exp(-U(x))/C} Given a potential function \eqn{U}{U} and its gradient evaluation, draws a trajectory and computes its numerical error. The trajectory drawn corresponds to the proposal in the sampling algorithm: Metropolis Adjusted Langevin Trajectories (Riou-Durand and Vogrinc 2022). Details available at: https://arxiv.org/abs/2202.13230.
 #'
 #' @param init Real vector. Initial values for the Langevin trajectory.
-#' @param U A potential function to return the log-density of the distribution to be sampled from, up to an additive constant. It should input a real vector of the same length as init and output a scalar.
-#' @param grad A function to return the gradient of the potential. It should input and output a real vector of the same length as init.
+#' @param U A potential function to return the log-density of the distribution to be sampled from, up to an additive constant. It should input a real vector of the same length as \code{init} and output a scalar.
+#' @param grad A function to return the gradient of the potential. It should input and output a real vector of the same length as \code{init}.
 #' @param g Non-negative real number. The friction, a.k.a damping parameter. The choice g=0 boils down to Hamiltonian Monte Carlo.
 #' @param h Positive real number. The time step.
 #' @param L Positive integer. The number of steps per trajectory. The choice L=1 boils down to the Metropolis Adjusted Langevin Algorithm.
@@ -24,7 +24,7 @@
 #' grad=function(x){x/sigma^2}
 #' g=1.5
 #' h=0.20
-#' L=10
+#' L=8
 #' trajectory(init,U,grad,g,h,L)
 trajectory=function(init,U,grad,g,h,L){
   d=length(init)
