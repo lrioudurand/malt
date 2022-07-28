@@ -1,0 +1,61 @@
+---
+title: "Introduction to malt"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to malt}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(malt)
+```
+
+Goal: generate samples $X_1,\cdots,X_n\in\mathbb{R}^d$ approximately distributed from
+$$
+\Pi(x)\propto e^{-\Phi(x)}
+$$
+by evaluating a potential function $\Phi$ and its gradient.
+
+Example 1: Gaussian
+$$
+\begin{aligned}
+\Phi(x)&=\frac{1}{2}(x-\mu)^\top\Sigma^{-1}(x-\mu)\\
+\nabla\Phi(x)&=\Sigma^{-1}(x-\mu)
+\end{aligned}
+$$
+Suppose we want to sample from a Gaussian distribution with heterogeneous scales, such that
+$$
+\mu=0_d,\qquad \Sigma=\underset{1\le i\le d}{\rm diag}(\sigma_i^2),\qquad \sigma_i^2=i/d,\qquad d=50.
+$$
+We specify the corresponding potential function and its gradient, as well as the starting values.
+```{r}
+d=50
+sigma=((d:1)/d)^(1/2)
+U=function(x){sum(0.5*x^2/sigma^2)}
+grad=function(x){x/sigma^2}
+init=rep(5,d)
+```
+
+We choose a friction, time step and integration time. We run malt from a deterministic initialisation and draw $n=10000$ samples. We also run hmc (friction: g=0) to compare. Both outputs are stored.
+```{r}
+n=10^4
+g=1.5
+h=0.2
+L=10
+output_malt=malt(init,U,grad,n,g,h,L)
+output_hmc=malt(init,U,grad,n,0,h,L)
+```
+We obtain the acceptance rates of malt and hmc.
+```{r}
+output_malt$acceptance
+output_hmc$acceptance
+```
+See also: [Assessing the sampling efficiency](ess.html).

@@ -13,21 +13,22 @@ malt(init, U, grad, n, g, h, L, warm = FALSE)
 
 \item{grad}{A function to return the gradient of the potential. It should input and output a real vector of the same length as \code{init}.}
 
-\item{n}{Positive integer. The number of samples to be generated.}
+\item{n}{The number of samples to be generated. Positive integer.}
 
-\item{g}{Non-negative real number. The friction, a.k.a damping parameter. The choice g=0 boils down to Hamiltonian Monte Carlo.}
+\item{g}{The friction, a.k.a damping parameter. Non-negative real number. The choice g=0 boils down to Hamiltonian Monte Carlo.}
 
-\item{h}{Positive real number. The time step.}
+\item{h}{The time step. Positive real number.}
 
-\item{L}{Positive integer. The number of steps per trajectory. The choice L=1 boils down to the Metropolis Adjusted Langevin Algorithm.}
+\item{L}{The number of steps per trajectory. Positive integer. The choice L=1 boils down to the Metropolis Adjusted Langevin Algorithm.}
 
-\item{warm}{Logical. Should the chain be warmed up? If TRUE, the samples are generated after a warm-up phase of n successive trajectories. The first half of the warm-up phase is composed by unadjusted trajectories.}
+\item{warm}{Should the chain be warmed up? Logical. If TRUE, the samples are generated after a warm-up phase of n successive trajectories. The first half of the warm-up phase is composed by unadjusted trajectories.}
 }
 \value{
 Returns a list with the following objects:
 \item{samples}{a matrix whose rows are the samples generated.}
 \item{draw}{a vector corresponding to the last draw of the chain.}
-\item{acceptance}{the acceptance rate of the chain. An acceptance rate close to zero/one indicates that the time step chosen is respectively too large/small. Optimally, the time step should be tuned to obtain an acceptance rate slightly above 65\%.}
+\item{accept}{the acceptance rate of the chain. An acceptance rate close to zero/one indicates that the time step chosen is respectively too large/small. Optimally, the time step should be tuned to obtain an acceptance rate slightly above 65\%.}
+\item{param}{the input parameters of the malt algorithm.}
 }
 \description{
 Implements the sampling algorithm: Metropolis Adjusted Langevin Trajectories (MALT) as described in Riou-Durand and Vogrinc (2022).

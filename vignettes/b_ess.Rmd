@@ -1,8 +1,8 @@
 ---
-title: "How to use malt?"
+title: "Assessing the sampling efficiency"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to use malt?}
+  %\VignetteIndexEntry{Assessing the sampling efficiency}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -1,8 +1,8 @@
 ---
-title: "Banana"
+title: "Beyond the convex framework"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Banana}
+  %\VignetteIndexEntry{Beyond the convex framework}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -4,7 +4,7 @@ Version: 0.9
 Authors@R: 
     person("Lionel", "Riou-Durand", email="lionel.riou-durand@warwick.ac.uk", role = c("aut", "cre"))
 Description: Implements the sampling algorithm: Metropolis Adjusted Langevin Trajectories (Riou-Durand and Vogrinc 2022). Details available at: <arXiv:2202.13230>. The MALT algorithm is a robust extension of Hamiltonian Monte Carlo, for which robustness of tuning is enabled by a positive choice of damping parameter (a.k.a friction). 
-License: GPL-3
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
@@ -17,4 +17,3 @@ VignetteBuilder: knitr
 Imports: 
     stats,
     coda
-

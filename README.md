@@ -8,9 +8,10 @@
 
 This package implements the sampling algorithm: Metropolis Adjusted
 Langevin Trajectories (Riou-Durand and Vogrinc 2022). Details available
-at: <https://arxiv.org/abs/2202.13230>. The MALT algorithm is a robust
-extension of Hamiltonian Monte Carlo, for which robustness of tuning is
-enabled by a positive choice of damping parameter (a.k.a friction).
+on [arXiv](https://arxiv.org/abs/2202.13230). The MALT algorithm is a
+robust extension of Hamiltonian Monte Carlo, for which robustness of
+tuning is enabled by a positive choice of damping parameter (a.k.a
+friction).
 
 ## Installation
 

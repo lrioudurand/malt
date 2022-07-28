@@ -1,8 +1,8 @@
 ---
-title: "Bayesian Logistic Regression"
+title: "Fitting a logistic regression"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Logistic Regression}
+  %\VignetteIndexEntry{Fitting a logistic regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
